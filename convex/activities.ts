@@ -9,14 +9,15 @@ export const list = query({
   handler: async (ctx, args) => {
     const limit = args.limit ?? 50;
     
-    let q = ctx.db.query("activities").order("desc");
-    
     if (args.category) {
-      q = ctx.db.query("activities")
-        .withIndex("by_category", (q) => q.eq("category", args.category))
+      const category = args.category;
+      const q = ctx.db.query("activities")
+        .withIndex("by_category", (q) => q.eq("category", category))
         .order("desc");
+      return await q.take(limit);
     }
     
+    const q = ctx.db.query("activities").order("desc");
     return await q.take(limit);
   },
 });
